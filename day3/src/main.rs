@@ -6,7 +6,7 @@ use std::sync::atomic::fence;
 use std::{fs::File, io::BufRead};
 
 fn read_from_file() -> Vec<Vec<u32>> {
-    let mut file = File::open("inputs");
+    let mut file = File::open("test");
     let result: Vec<Vec<u32>> = match file {
         Ok(file) => {
             let lines = io::BufReader::new(file).lines();
