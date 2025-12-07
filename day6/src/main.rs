@@ -6,7 +6,7 @@ use std::ops::RangeInclusive;
 use std::{fs::File, io::BufRead};
 
 fn read_from_file() -> (Vec<Vec<String>>, Vec<String>, Vec<usize>) {
-    let file = File::open("test");
+    let file = File::open("inputs");
     let result: (Vec<Vec<String>>, Vec<String>, Vec<usize>) = match file {
         Ok(file) => {
             let mut lines: Vec<String> = Vec::new();
@@ -60,35 +60,58 @@ fn read_from_file() -> (Vec<Vec<String>>, Vec<String>, Vec<usize>) {
 fn do_task_two(inputs: (Vec<Vec<String>>, Vec<String>, Vec<usize>)) {
     println!("{:?} {:?} {:?}", inputs.0, inputs.1, inputs.2);
     let mut lines = inputs.0.clone();
-    let mut colums = vec![];
+    let mut columns = vec![];
     lines.reverse();
     for i in 0..inputs.2.len() {
         let mut colum = vec![];
         for line in &lines {
             colum.push(line[i].clone());
         }
-        colums.push(colum);
+        columns.push(colum);
     }
 
-    println!("{:?}", colums);
+    println!("{:?}", columns);
 
-    let mut new_nums: Vec<Vec<char>> = Vec::new();
+    let mut res = 0;
 
-    for col in colums {
-        println!("{:?}", col);
+    for (index, col) in columns.iter().enumerate() {
         let l = col.first().unwrap().len();
+        let mut new_nums: Vec<Vec<char>> = Vec::new();
 
         for i in 0..l {
-            for num in &col {
+            for num in col {
                 if i == 0 {
                     new_nums.push(Vec::new());
                 }
                 new_nums[i].push(num.chars().nth(i).unwrap());
-                println!("{:?}", new_nums[i]);
             }
         }
-        println!("{:?}", new_nums);
+
+        //println!("new {:?}", new_nums);
+
+        let mut mid_res: u64 = 0;
+        for (i, nn) in new_nums.iter().enumerate() {
+            let nu = nn.iter().collect::<String>();
+            let nuu = nu.trim();
+            println!("{:?} {:?}", nuu, &inputs.1[index]);
+            if nuu.is_empty() {
+                continue;
+            }
+            let nc = nuu.parse::<u64>().unwrap();
+            if &inputs.1[index] == "*" {
+                if mid_res == 0 {
+                    mid_res = nc;
+                } else {
+                    mid_res *= nc;
+                }
+            } else {
+                mid_res += nc;
+            }
+            //println!("{:?}", mid_res);
+        }
+        res += mid_res;
     }
+    println!("{:?}", res);
 }
 
 fn do_task_one(inputs: (Vec<Vec<String>>, Vec<String>, Vec<usize>)) {
@@ -102,7 +125,7 @@ fn do_task_one(inputs: (Vec<Vec<String>>, Vec<String>, Vec<usize>)) {
             if ops[j] == "+" {
                 res[j] += num;
             } else if ops[j] == "*" {
-                if res[j] != 0 {
+                if res[j] == 0 {
                     res[j] *= num;
                 } else {
                     res[j] = num;
